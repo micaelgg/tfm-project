@@ -76,6 +76,7 @@ if __name__ == '__main__':
     cvscores = []
 
     model_path = dataset_path + datetime.now().strftime("%H:%M_%m-%d-%y") + "/"
+
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
