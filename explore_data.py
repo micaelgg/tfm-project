@@ -46,11 +46,11 @@ if __name__ == '__main__':
     # TODO comprobar si los dos ultimos valores son Harmonic ratio and pitch
     # cols = pd.MultiIndex.from_product([lable_one, lable_one])
 
+    df_emotions = pd.DataFrame(data=ds.targets, columns=["emotion"])
     mean_features = []
     for single_audio in features:
         mean_features.append(np.apply_along_axis(np.mean, 0, single_audio))
     df_features = pd.DataFrame.from_records(data=mean_features, columns=lable_features)
-    df_emotions = pd.DataFrame(data=ds.targets, columns=["emotion"])
     df = pd.concat([df_features, df_emotions], axis=1)
 
     emotion_dic = {0: 'anger', 1: 'disgust', 2: 'fear', 3: 'happiness', 4: 'sadness', 5: 'surprise', 6: 'neutral',
