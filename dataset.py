@@ -22,7 +22,7 @@ class Dataset:
         self.subjets = []
         self.emotions = number_emo
 
-        if name_dataset == "enterface05":
+        if name_dataset == "enterface":
             self.classes = {0: 'an', 1: 'di', 2: 'fe', 3: 'ha', 4: 'sa', 5: 'su'}
             self.frame_size = 0.025  # 25 msec segments
             self.step = 0.01  # 10 msec time step
@@ -97,14 +97,7 @@ class Dataset:
         for original in targets:
             self.targets.append(self.emotions.index(original))
 
-    # todo adapt it to the last change
     def get_enterface05_dataset(self, path, emotions):
-        """
-        
-        SIN PROBAR
-        
-        """
-
         # name format = s1_an_2
         males = ['s1', 's2', 's3', 's6', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18',
                  's19', 's20', 's21', 's22', 's23', 's24', 's25', 's27', 's30', 's32', 's34', 's35', 's36', 's37',
@@ -112,36 +105,28 @@ class Dataset:
         females = ['s4', 's5', 's7', 's26', 's28', 's29', 's31', 's33', 's44']
         classes = {v: k for k, v in self.classes.items()}
 
-        get_data = True
-        for speak_test in itertools.product(males, females):
-            i = 0
-            train = []
-            test = []
-            for audio in os.listdir(path):
-                audio_splitted = audio.split(".wav")[0].split('_')
-                target = classes[audio_splitted[1]]
-                if target in emotions:
-                    audio_path = os.path.join(path, audio)
-                    [x, Fs] = librosa.load(audio_path, sr=16000)
-                    if get_data:
-                        self.data.append((x, Fs))
-                        self.targets.append(target)
-                    if audio_splitted[0] in speak_test:
-                        test.append(i)
-                    else:
-                        train.append(i)
-                    i = i + 1
-            self.train_sets.append(train)
-            self.test_sets.append(test)
-            get_data = False
+        number_subjets = len(males) + len(females)
+        targets = []
+        subjets = []
+        for audio in os.listdir(path):
+            audio_splitted = audio.split(".wav")[0].split('_')
+            target = classes[audio_splitted[1]]
+            if target in emotions:
+                audio_path = os.path.join(path, audio)
+                [x, Fs] = librosa.load(audio_path, sr=16000)
+                self.data.append((x, Fs))
+                targets.append(target)
+                subjet = int((audio_splitted[0])[1:])
+                subjets.append(subjet)
 
-    # todo adapt it to the last change
+        for j in range(0, number_subjets):
+            indices = np.where(np.isin(subjets, j + 1))[0].tolist()
+            self.subjets.append(indices)
+
+        for original in targets:
+            self.targets.append(self.emotions.index(original))
+
     def get_cremad_dataset(self, path, emotions):
-        """
-
-        SIN PROBAR
-
-        """
         # name format = 1001_IEO_FEA_LO
         males = ['1001', '1005', '1011', '1014', '1015', '1016', '1017', '1019', '1022', '1023', '1026', '1027', '1031',
                  '1032', '1033', '1034', '1035', '1036', '1038', '1039', '1040', '1041', '1042', '1044', '1045', '1048',
@@ -157,25 +142,23 @@ class Dataset:
                    ]
         classes = {v: k for k, v in self.classes.items()}
 
-        get_data = True
-        for speak_test in itertools.product(males, females):
-            i = 0
-            train = []
-            test = []
-            for audio in os.listdir(path):
-                audio_splitted = audio.split(".wav")[0].split('_')
-                target = classes[audio_splitted[2]]
-                if target in emotions:
-                    audio_path = os.path.join(path, audio)
-                    [x, Fs] = librosa.load(audio_path, sr=16000)
-                    if get_data:
-                        self.data.append((x, Fs))
-                        self.targets.append(target)
-                    if audio_splitted[0] in speak_test:
-                        test.append(i)
-                    else:
-                        train.append(i)
-                    i = i + 1
-            self.train_sets.append(train)
-            self.test_sets.append(test)
-            get_data = False
+        number_subjets = len(males) + len(females)
+        targets = []
+        subjets = []
+        for audio in os.listdir(path):
+            audio_splitted = audio.split(".wav")[0].split('_')
+            target = classes[audio_splitted[2]]
+            if target in emotions:
+                audio_path = os.path.join(path, audio)
+                [x, Fs] = librosa.load(audio_path, sr=16000)
+                self.data.append((x, Fs))
+                targets.append(target)
+                subjet = int((audio_splitted[0])[1:])
+                subjets.append(subjet)
+
+        for j in range(0, number_subjets):
+            indices = np.where(np.isin(subjets, j + 1))[0].tolist()
+            self.subjets.append(indices)
+
+        for original in targets:
+            self.targets.append(self.emotions.index(original))
