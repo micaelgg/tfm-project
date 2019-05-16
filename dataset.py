@@ -128,6 +128,8 @@ class Dataset:
 
     def get_cremad_dataset(self, path, emotions):
         # name format = 1001_IEO_FEA_LO
+        levels = ['MD', 'HI']
+
         males = ['1001', '1005', '1011', '1014', '1015', '1016', '1017', '1019', '1022', '1023', '1026', '1027', '1031',
                  '1032', '1033', '1034', '1035', '1036', '1038', '1039', '1040', '1041', '1042', '1044', '1045', '1048',
                  '1050', '1051', '1057', '1059', '1062', '1064', '1065', '1066', '1067', '1068', '1069', '1070', '1071',
@@ -148,7 +150,8 @@ class Dataset:
         for audio in os.listdir(path):
             audio_splitted = audio.split(".wav")[0].split('_')
             target = classes[audio_splitted[2]]
-            if target in emotions:
+            level = audio_splitted[3]
+            if target in emotions and level in levels:
                 audio_path = os.path.join(path, audio)
                 [x, Fs] = librosa.load(audio_path, sr=16000)
                 self.data.append((x, Fs))

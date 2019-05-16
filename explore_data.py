@@ -3,9 +3,9 @@ from argparse import ArgumentParser
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+
 import pandas as pd
 import numpy as np
-from ggplot import *
 
 try:
     import cPickle as pickle
@@ -14,7 +14,7 @@ except ImportError:
 
 
 def pickle_to_datagrame(dataset):  # TODO como afecta globalvars aqui?
-    lable_features = ['zcr', 'energy', 'energy_entropy', 'spectral_centroid', 'spectral_spread', 'spectral_entropy',
+    label_features = ['zcr', 'energy', 'energy_entropy', 'spectral_centroid', 'spectral_spread', 'spectral_entropy',
                       'spectral_flux', 'spectral_rolloff', 'mfcc_1', 'mfcc_2', 'mfcc_3', 'mfcc_4', 'mfcc_5', 'mfcc_6',
                       'mfcc_7', 'mfcc_8', 'mfcc_9', 'mfcc_10', 'mfcc_11', 'mfcc_12', 'mfcc_13', 'chroma_1', 'chroma_2',
                       'chroma_3', 'chroma_4', 'chroma_5', 'chroma_6', 'chroma_7', 'chroma_8', 'chroma_9', 'chroma_10',
@@ -36,7 +36,7 @@ def pickle_to_datagrame(dataset):  # TODO como afecta globalvars aqui?
     mean_features = []
     for single_audio in features:
         mean_features.append(np.apply_along_axis(np.mean, 0, single_audio))
-    df_features = pd.DataFrame.from_records(data=mean_features, columns=lable_features)
+    df_features = pd.DataFrame.from_records(data=mean_features, columns=label_features)
 
     df_concat = pd.concat([df_features, df_emotions], axis=1)
     df_concat["dataset"] = ds.name_dataset
@@ -57,9 +57,17 @@ if __name__ == '__main__':
     df = pd.concat([df_berlin, df_ravdess, df_enterface, df_cremad], axis=0)
 
     sns.set(style="ticks", palette="pastel")
-    sns.boxplot(x="emotion", y="zcr", palette=["m", "g"], hue="dataset", data=df)
     sns.despine(offset=10, trim=True)
 
-    plt.show()
+    label_features = ['zcr', 'energy', 'energy_entropy', 'spectral_centroid', 'spectral_spread', 'spectral_entropy',
+                      'spectral_flux', 'spectral_rolloff', 'mfcc_1', 'mfcc_2', 'mfcc_3', 'mfcc_4', 'mfcc_5', 'mfcc_6',
+                      'mfcc_7', 'mfcc_8', 'mfcc_9', 'mfcc_10', 'mfcc_11', 'mfcc_12', 'mfcc_13', 'chroma_1', 'chroma_2',
+                      'chroma_3', 'chroma_4', 'chroma_5', 'chroma_6', 'chroma_7', 'chroma_8', 'chroma_9', 'chroma_10',
+                      'chroma_11', 'chroma_12', 'chroma_std', 'harmonic_ratio', 'pitch']
+
+    for label in label_features:
+        ax = sns.boxplot(x="emotion", y=label, palette=["m", "g"], hue="dataset", data=df)
+        plt.show()
+
 
     print("final")
