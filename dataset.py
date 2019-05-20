@@ -29,8 +29,8 @@ class Dataset:
             self.get_enterface05_dataset(path, number_emo)
         elif name_dataset == "berlin":
             self.classes = {0: 'W', 1: 'E', 2: 'A', 3: 'F', 4: 'T', 8: 'L', 6: 'N'}
-            self.frame_size = 0.025  # 25 msec segments
-            self.step = 0.01  # 10 msec time step
+            self.frame_size = 0.015  # 20 msec segments
+            self.step = 0.0075  # 10 msec time step
             self.get_berlin_dataset(path, number_emo)
         elif name_dataset == "ravdess":
             self.classes = {0: '05', 1: '07', 2: '06', 3: '03', 4: '04', 5: '08', 6: '01', 7: '02'}
