@@ -3,7 +3,6 @@ from argparse import ArgumentParser
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 import pandas as pd
 import numpy as np
 
@@ -20,18 +19,16 @@ def pickle_to_datagrame(dataset):  # TODO como afecta globalvars aqui?
                       'chroma_3', 'chroma_4', 'chroma_5', 'chroma_6', 'chroma_7', 'chroma_8', 'chroma_9', 'chroma_10',
                       'chroma_11', 'chroma_12', 'chroma_std', 'harmonic_ratio', 'pitch']
     # TODO COMPROBAR 'harmonic_ratio', 'pitch'
-    emotion_dic = {0: 'anger', 1: 'disgust', 2: 'fear', 3: 'happiness', 4: 'sadness', 5: 'surprise', 6: 'neutral',
-                   7: 'calm', 8: 'boredom'}
 
-    dataset_path = dataset + "/"
+    dataset_path = "data/" + dataset + "/" + dataset
     print("Loading data from " + dataset + " data set...")
-    ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))
+    ds = pickle.load(open(dataset_path + '_db.p', 'rb'))
     print("Number of samples: " + str(len(ds.targets)))
     print("Loading features from file...\n")
-    features = pickle.load(open(dataset_path + dataset + '_features.p', 'rb'))
+    features = pickle.load(open(dataset_path + '_features.p', 'rb'))
 
-    df_emotions = pd.DataFrame(data=ds.targets, columns=["emotion"])
-    df_emotions["emotion"] = df_emotions["emotion"].map(lambda i: emotion_dic[i])
+    df_emotions = pd.Series(data=ds.targets, name="emotion", dtype="category")
+    df_emotions = df_emotions.map(lambda i: ds.dictionary[i])
 
     mean_features = []
     for single_audio in features:
@@ -68,6 +65,5 @@ if __name__ == '__main__':
     for label in label_features:
         ax = sns.boxplot(x="emotion", y=label, palette=["m", "g"], hue="dataset", data=df)
         plt.show()
-
 
     print("final")

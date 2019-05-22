@@ -35,7 +35,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     globalvars.dataset = args.name
     dataset = args.name
-    dataset_path = dataset + "/"
+    dataset_path = "data/" + dataset + "/"
 
     print("Loading data from " + dataset + " data set...")
     ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))

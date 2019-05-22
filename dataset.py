@@ -14,33 +14,34 @@ class Dataset:
     0: 'anger', 1: 'disgust', 2: 'fear', 3: 'happiness', 4: 'sadness', 5: 'surprise', 6: 'neutral', 7: 'calm', 8: 'boredom'
     """
 
-    def __init__(self, path, name_dataset, emotions, number_emo):
+    def __init__(self, path, name_dataset, emotions, number_emo, frame_size, step):
         self.name_dataset = name_dataset
         self.name_emotions = emotions
         self.targets = []
         self.data = []
         self.subjets = []
         self.emotions = number_emo
+        self.dictionary = dict(zip(np.arange(0, len(emotions)), emotions))
 
         if name_dataset == "enterface":
             self.classes = {0: 'an', 1: 'di', 2: 'fe', 3: 'ha', 4: 'sa', 5: 'su'}
-            self.frame_size = 0.025  # 25 msec segments
-            self.step = 0.01  # 10 msec time step
+            self.frame_size = frame_size
+            self.step = step
             self.get_enterface05_dataset(path, number_emo)
         elif name_dataset == "berlin":
             self.classes = {0: 'W', 1: 'E', 2: 'A', 3: 'F', 4: 'T', 8: 'L', 6: 'N'}
-            self.frame_size = 0.015  # 20 msec segments
-            self.step = 0.0075  # 10 msec time step
+            self.frame_size = frame_size
+            self.step = step
             self.get_berlin_dataset(path, number_emo)
         elif name_dataset == "ravdess":
             self.classes = {0: '05', 1: '07', 2: '06', 3: '03', 4: '04', 5: '08', 6: '01', 7: '02'}
-            self.frame_size = 0.025  # 25 msec segments
-            self.step = 0.01  # 10 msec time step
+            self.frame_size = frame_size
+            self.step = step
             self.get_ravdess_dataset(path, number_emo)
         elif name_dataset == "cremad":
             self.classes = {0: 'ANG', 1: 'DIS', 2: 'FEA', 3: 'HAP', 4: 'SAD', 6: 'NEU'}
-            self.frame_size = 0.025  # 25 msec segments
-            self.step = 0.01  # 10 msec time step
+            self.frame_size = frame_size
+            self.step = step
             self.get_cremad_dataset(path, number_emo)
 
     def get_ravdess_dataset(self, path, emotions):
