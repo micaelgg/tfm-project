@@ -9,6 +9,7 @@ from keras.utils import to_categorical
 from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
+from keras.callbacks import CSVLogger
 from keras.models import load_model
 from utility import networks, metrics_util, globalvars
 
@@ -94,14 +95,11 @@ if __name__ == '__main__':
                          globalvars.attention_init_value, dtype=np.float32)
 
         # create network
-        model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                     nb_classes=nb_classes)
-        """
-        globalvars.max_len=f_global.shape[1]
+        globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
         model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                   nb_classes=nb_classes)
-        """
+                                                     nb_classes=nb_classes)
+
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
@@ -124,6 +122,9 @@ if __name__ == '__main__':
                 histogram_freq=10,
                 write_graph=True,
                 write_images=True
+            ),
+            CSVLogger(
+                filename=file_path + 'training.log'
             )
         ]
 

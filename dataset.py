@@ -56,7 +56,8 @@ class Dataset:
         for audio in os.listdir(path):
             audio_splitted = audio.split(".wav")[0].split('-')
             target = classes[audio_splitted[2]]
-            if target in emotions:
+            intensity = audio_splitted[3]
+            if target in emotions and intensity == "02":
                 audio_path = os.path.join(path, audio)
                 [x, Fs] = librosa.load(audio_path, sr=16000)
                 self.data.append((x, Fs))
@@ -65,7 +66,7 @@ class Dataset:
                 subjets.append(subjet)
 
         for j in range(0, number_subjets):
-            indices = np.where(np.isin(subjets, j + 1))[0].tolist()
+            indices = np.where(np.isin(subjets, j))[0].tolist()
             self.subjets.append(indices)
 
         for original in targets:
@@ -92,7 +93,7 @@ class Dataset:
                 subjets.append(subjet)
 
         for j in range(0, number_subjets):
-            indices = np.where(np.isin(subjets, j + 1))[0].tolist()
+            indices = np.where(np.isin(subjets, j))[0].tolist()
             self.subjets.append(indices)
 
         for original in targets:
@@ -121,7 +122,7 @@ class Dataset:
                 subjets.append(subjet)
 
         for j in range(0, number_subjets):
-            indices = np.where(np.isin(subjets, j + 1))[0].tolist()
+            indices = np.where(np.isin(subjets, j))[0].tolist()
             self.subjets.append(indices)
 
         for original in targets:
@@ -161,7 +162,7 @@ class Dataset:
                 subjets.append(subjet)
 
         for j in range(0, number_subjets):
-            indices = np.where(np.isin(subjets, j + 1))[0].tolist()
+            indices = np.where(np.isin(subjets, j))[0].tolist()
             self.subjets.append(indices)
 
         for original in targets:
