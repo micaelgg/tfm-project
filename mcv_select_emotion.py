@@ -103,8 +103,8 @@ if __name__ == '__main__':
                          globalvars.attention_init_value, dtype=np.float32)
 
         # create network
-        model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                     nb_classes=nb_classes)
+        model = networks.create_softmax_la_network(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                   nb_classes=nb_classes)
         """
         globalvars.max_len=f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
@@ -153,11 +153,11 @@ if __name__ == '__main__':
 
         cvscores.append(scores[1] * 100)
 
-        print("Getting the confusion matrix on whole set...")
+        print("Getting the confusion matrix on test set...")
         u = np.full((f_global.shape[0], globalvars.nb_attention_param),
                     globalvars.attention_init_value, dtype=np.float32)
-        predictions = best_model.predict([u, f_global])
-        confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y)
+        predictions = best_model.predict([u_test, f_global[test]])
+        confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y[test])
         print(confusion_matrix)
 
         clear_session()
