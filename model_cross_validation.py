@@ -22,6 +22,7 @@ from datetime import datetime
 import numpy as np
 import os
 import sys
+import logging
 
 try:
     import cPickle as pickle
@@ -29,6 +30,7 @@ except ImportError:
     import pickle
 
 if __name__ == '__main__':
+    start_time = datetime.now().strftime("%H:%M")
 
     parser = ArgumentParser()
     parser.add_argument('name', action='store',
@@ -38,19 +40,28 @@ if __name__ == '__main__':
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
 
-    print("Loading data from " + dataset + " data set...")
+    model_path = dataset_path + datetime.now().strftime("%H:%M_%m-%d-%y") + "/"
+    try:
+        os.makedirs(model_path)
+        print("Directory ", model_path, " Created ")
+    except FileExistsError:
+        print("Directory ", model_path, " already exists")
+    logging.basicConfig(filename=model_path + 'model_cross_validation.log', level=logging.DEBUG)
+
+    logging.info("Model cross validation")
+    logging.info("Loading data from " + dataset + " data set...")
     ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))
     nb_samples = len(ds.targets)
-    print("Number of samples: " + str(nb_samples))
+    logging.info("Number of samples: " + str(nb_samples))
     globalvars.nb_classes = len(np.unique(ds.targets))
     nb_classes = globalvars.nb_classes
-    print("Number of classes: " + str(globalvars.nb_classes))
+    logging.info("Number of classes: " + str(globalvars.nb_classes))
     i = 0
     for name_emo in ds.name_emotions:
-        print(str(i) + " -> " + name_emo)
+        logging.info(str(i) + " -> " + name_emo)
         i += 1
 
-    print("Loading features from file...")
+    logging.info("Loading features from file...")
     f_global = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
 
     y = np.array(ds.targets)
@@ -60,31 +71,21 @@ if __name__ == '__main__':
     kfold = KFold(n_splits=k_folds, shuffle=False, random_state=1)
     train_sets = []
     test_sets = []
-    for kfold_train, kfold_test in kfold.split(ds.subjets):
+    for kfold_train, kfold_test in kfold.split(ds.subjects):
         k_train_sets = []
         for k in range(0, kfold_train.size):
-            k_train_sets = np.concatenate((k_train_sets, ds.subjets[kfold_train[k]]), axis=None)
+            k_train_sets = np.concatenate((k_train_sets, ds.subjects[kfold_train[k]]), axis=None)
         train_sets.append(k_train_sets.astype(int))
 
         k_test_sets = []
         for k in range(0, kfold_test.size):
-            k_test_sets = np.concatenate((k_test_sets, ds.subjets[kfold_test[k]]), axis=None)
+            k_test_sets = np.concatenate((k_test_sets, ds.subjects[kfold_test[k]]), axis=None)
         test_sets.append(k_test_sets.astype(int))
 
     splits = zip(train_sets, test_sets)
-    print("Using speaker independence %s-fold cross validation" % k_folds)
+    logging.info("Using speaker independence %s-fold cross validation" % k_folds)
 
     cvscores = []
-
-    model_path = dataset_path + datetime.now().strftime("%H:%M_%m-%d-%y") + "/"
-
-    try:
-        os.makedirs(model_path)
-        print("Directory ", model_path, " Created ")
-    except FileExistsError:
-        print("Directory ", model_path, " already exists")
-
-    start_time = datetime.now().strftime("%H:%M")
 
     i = 1
     for (train, test) in splits:
@@ -124,7 +125,7 @@ if __name__ == '__main__':
                 write_images=True
             ),
             CSVLogger(
-                filename=file_path + 'training.log'
+                filename=file_path + '-fit.log'
             )
         ]
 
@@ -139,24 +140,24 @@ if __name__ == '__main__':
         # evaluate the best model in ith fold
         best_model = load_model(file_path)
 
-        print("Evaluating on test set...")
+        logging.info("Evaluating on test set...")
         scores = best_model.evaluate([u_test, f_global[test]], y[test], batch_size=128, verbose=1)
-        print("The highest %s in %dth fold is %.2f%%" % (model.metrics_names[1], i, scores[1] * 100))
+        logging.info("The highest %s in %dth fold is %.2f%%" % (model.metrics_names[1], i, scores[1] * 100))
 
         cvscores.append(scores[1] * 100)
 
-        print("Getting the confusion matrix on whole set...")
+        logging.info("Getting the confusion matrix on whole set...")
         u = np.full((f_global.shape[0], globalvars.nb_attention_param),
                     globalvars.attention_init_value, dtype=np.float32)
         predictions = best_model.predict([u, f_global])
         confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y)
-        print(confusion_matrix)
+        logging.info(confusion_matrix)
 
         clear_session()
         i += 1
 
-print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+logging.info("Accuracy: " + "%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 end_time = datetime.now().strftime("%H:%M")
-print("Start time: " + start_time)
-print("End time: " + end_time)
+logging.info("Start time: " + start_time)
+logging.info("End time: " + end_time)
 sys.exit()

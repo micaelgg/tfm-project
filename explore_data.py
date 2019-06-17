@@ -12,7 +12,7 @@ except ImportError:
     import pickle
 
 
-def pickle_to_datagrame(dataset):  # TODO como afecta globalvars aqui?
+def pickle_to_dataframe(dataset):  # TODO como afecta globalvars aqui?
     label_features = ['zcr', 'energy', 'energy_entropy', 'spectral_centroid', 'spectral_spread', 'spectral_entropy',
                       'spectral_flux', 'spectral_rolloff', 'mfcc_1', 'mfcc_2', 'mfcc_3', 'mfcc_4', 'mfcc_5', 'mfcc_6',
                       'mfcc_7', 'mfcc_8', 'mfcc_9', 'mfcc_10', 'mfcc_11', 'mfcc_12', 'mfcc_13', 'chroma_1', 'chroma_2',
@@ -46,10 +46,10 @@ if __name__ == '__main__':
                         help='ID emotions')
     args = parser.parse_args()
     ids_emotions = args.emotions
-    df_berlin = pickle_to_datagrame("berlin-" + ids_emotions)
-    df_ravdess = pickle_to_datagrame("ravdess-" + ids_emotions)
-    df_enterface = pickle_to_datagrame("enterface-" + ids_emotions)
-    df_cremad = pickle_to_datagrame("cremad-" + ids_emotions)
+    df_berlin = pickle_to_dataframe("berlin-" + ids_emotions)
+    df_ravdess = pickle_to_dataframe("ravdess-" + ids_emotions)
+    df_enterface = pickle_to_dataframe("enterface-" + ids_emotions)
+    df_cremad = pickle_to_dataframe("cremad-" + ids_emotions)
 
     df = pd.concat([df_berlin, df_ravdess, df_enterface, df_cremad], axis=0)
 
