@@ -98,8 +98,8 @@ if __name__ == '__main__':
         # create network
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
-        model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                     nb_classes=nb_classes)
+        model = networks.create_softmax_la_network(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                   nb_classes=nb_classes)
 
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
