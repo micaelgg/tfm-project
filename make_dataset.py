@@ -53,6 +53,7 @@ def extract_features(dataset):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("name", help="name of dataset")
+    parser.add_argument("gender", help="male female both")
     parser.add_argument("frame_size", help="frame size (milliseconds)")
     parser.add_argument("path", help="path to dataset")
     parser.add_argument('-emotions', action='store', nargs='*',
@@ -62,6 +63,7 @@ if __name__ == '__main__':
 
     name_dataset = args.name
     path_dataset = args.path
+    gender = args.gender
     emotions = args.emotions
     frame_size = float(args.frame_size) * 0.001
     step = float(frame_size) / 2
@@ -72,8 +74,8 @@ if __name__ == '__main__':
     for emo in emotions:
         number_emo.append(emotion_dic[emo])
 
-    dataset = Dataset(path_dataset, name_dataset, emotions, number_emo, frame_size, step)
-    name_save_dataset = name_dataset + '-' + str(frame_size) + '-' + ''.join(str(e) for e in number_emo)
+    dataset = Dataset(path_dataset, name_dataset, gender, emotions, number_emo, frame_size, step)
+    name_save_dataset = name_dataset + "-" + gender + '-' + str(frame_size) + '-' + ''.join(str(e) for e in number_emo)
     path_save_dataset = "data/" + name_save_dataset + "/" + name_save_dataset
 
     # source: https://thispointer.com/how-to-create-a-directory-in-python/
