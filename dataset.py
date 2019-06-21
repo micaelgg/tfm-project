@@ -23,7 +23,7 @@ class Dataset:
         self.dictionary = dict(zip(np.arange(0, len(emotions)), emotions))
         self.targets = []
         self.data = []
-        self.subjects = []
+        self.subjects_audios = []
         self.subjects_gender = []
 
         if name_dataset == "enterface":
@@ -78,7 +78,7 @@ class Dataset:
 
         for j in range(0, number_subjects):
             indices = np.where(np.isin(subjects, j))[0].tolist()
-            self.subjects.append(indices)
+            self.subjects_audios.append(indices)
 
         for original in targets:
             self.targets.append(self.emotions.index(original))
@@ -120,7 +120,7 @@ class Dataset:
 
         for j in range(0, number_subjects):
             indices = np.where(np.isin(subjects, j))[0].tolist()
-            self.subjects.append(indices)
+            self.subjects_audios.append(indices)
 
         for original in targets:
             self.targets.append(self.emotions.index(original))
@@ -164,7 +164,7 @@ class Dataset:
 
         for j in range(0, number_subjects):
             indices = np.where(np.isin(subjects, j))[0].tolist()
-            self.subjects.append(indices)
+            self.subjects_audios.append(indices)
 
         for original in targets:
             self.targets.append(self.emotions.index(original))
@@ -219,7 +219,7 @@ class Dataset:
 
         for j in range(0, number_subjects):
             indices = np.where(np.isin(subjects, j))[0].tolist()
-            self.subjects.append(indices)
+            self.subjects_audios.append(indices)
 
         for original in targets:
             self.targets.append(self.emotions.index(original))

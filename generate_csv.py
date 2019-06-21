@@ -62,7 +62,7 @@ if __name__ == '__main__':
     df_emotions["subject"] = 99
 
     i = 0
-    for j in ds.subjects:
+    for j in ds.subjects_audios:
         df_emotions.loc[j, "subject"] = i
         i += 1
     name_save_csv = "emotions-" + dataset

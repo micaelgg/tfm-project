@@ -71,15 +71,15 @@ if __name__ == '__main__':
     kfold = KFold(n_splits=k_folds, shuffle=False, random_state=1)
     train_sets = []
     test_sets = []
-    for kfold_train, kfold_test in kfold.split(ds.subjects):
+    for kfold_train, kfold_test in kfold.split(ds.subjects_audios):
         k_train_sets = []
         for k in range(0, kfold_train.size):
-            k_train_sets = np.concatenate((k_train_sets, ds.subjects[kfold_train[k]]), axis=None)
+            k_train_sets = np.concatenate((k_train_sets, ds.subjects_audios[kfold_train[k]]), axis=None)
         train_sets.append(k_train_sets.astype(int))
 
         k_test_sets = []
         for k in range(0, kfold_test.size):
-            k_test_sets = np.concatenate((k_test_sets, ds.subjects[kfold_test[k]]), axis=None)
+            k_test_sets = np.concatenate((k_test_sets, ds.subjects_audios[kfold_test[k]]), axis=None)
         test_sets.append(k_test_sets.astype(int))
 
     splits = zip(train_sets, test_sets)
@@ -98,8 +98,8 @@ if __name__ == '__main__':
         # create network
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
-        model = networks.create_softmax_la_network(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                   nb_classes=nb_classes)
+        model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                     nb_classes=nb_classes)
 
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
