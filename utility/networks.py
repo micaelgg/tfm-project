@@ -19,9 +19,9 @@ def create_softmax_la_network_2(input_shape, nb_classes, nb_lstm_cells=128):
         input_feature = Input(shape=input_shape)
         x = Masking(mask_value=globalvars.masking_value)(input_feature)
         x = Dense(globalvars.nb_hidden_units)(x)
-        x = Dropout(0.5)(x)
+        x = Dropout(rate=0.5)(x)
         x = Dense(globalvars.nb_hidden_units)(x)
-        x = Dropout(0.5)(x)
+        x = Dropout(rate=0.5)(x)
         y = Bidirectional(LSTM(nb_lstm_cells, return_sequences=True, dropout=0.5))(x)
 
     with K.name_scope('AttentionLayer'):

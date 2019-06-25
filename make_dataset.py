@@ -3,11 +3,12 @@ import pickle
 import numpy as np
 import sys
 import os
-from scipy import stats
+from sklearn import preprocessing
 from dataset import Dataset
+import generate_csv
 from pyAudioAnalysis import audioFeatureExtraction
 from keras.preprocessing import sequence
-
+import pandas as pd
 from utility import globalvars
 
 """ 
@@ -22,6 +23,7 @@ def extract_features(dataset):
     frame_size = dataset.frame_size
     step = dataset.step
     f_global = []
+    f_global_concatenate = pd.DataFrame()
 
     i = 0
     for (x, Fs) in data:
@@ -36,18 +38,17 @@ def extract_features(dataset):
         hr_pitch = audioFeatureExtraction.stFeatureSpeed(x, Fs, frame_size * Fs, step * Fs)
         f = np.append(f, hr_pitch.transpose(), axis=0)
 
-        # Z-normalized
-        f = stats.zscore(f, axis=0)
-
         f = f.transpose()
 
         f_global.append(f)
+
+        f_global_concatenate = pd.concat([f_global_concatenate, pd.DataFrame(f)], axis=0, ignore_index=True)
 
         sys.stdout.write("\033[F")
         i = i + 1
         print("Extracting features " + str(i) + '/' + str(nb_samples) + " from data set...")
 
-    return f_global
+    return f_global, f_global_concatenate
 
 
 if __name__ == '__main__':
@@ -90,7 +91,12 @@ if __name__ == '__main__':
     pickle.dump(dataset, open(path_save_dataset + '_db.p', 'wb'))
     # pickle.dump(dataset, open(path_to_save + name_dataset + '_db.p', 'wb'))
 
-    features = extract_features(dataset)
+    features, features_concatenate = extract_features(dataset)
+
+    scaler = preprocessing.MinMaxScaler().fit(features_concatenate)
+
+    for i in range(len(features)):
+        features[i] = scaler.transform(features[i])
 
     print("Saving features to file...")
     pickle.dump(features, open(path_save_dataset + '_features.p', 'wb'))
@@ -102,3 +108,5 @@ if __name__ == '__main__':
                                       value=globalvars.masking_value)
     print("Saving features to file... [sequence]")
     pickle.dump(features, open(path_save_dataset + '_features_sequence.p', 'wb'))
+
+    generate_csv.generate_csv(name_save_dataset)

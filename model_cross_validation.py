@@ -30,8 +30,7 @@ except ImportError:
     import pickle
 
 if __name__ == '__main__':
-    start_time = datetime.now().strftime("%H:%M")
-
+    # Almacenar datos de ejecución
     parser = ArgumentParser()
     parser.add_argument('name', action='store',
                         help='Name of dataset')
@@ -40,14 +39,19 @@ if __name__ == '__main__':
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
 
+    # Crear directorio del modelo
+    start_time = datetime.now().strftime("%H:%M")
     model_path = dataset_path + datetime.now().strftime("%H:%M_%m-%d-%y") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
     except FileExistsError:
         print("Directory ", model_path, " already exists")
-    logging.basicConfig(filename=model_path + 'model_cross_validation.log', level=logging.DEBUG)
+    logging.basicConfig(filename=model_path + 'model_cross_validation.log',
+                        level=logging.INFO,
+                        format="%(levelname)s: %(message)s")
 
+    # Cargar dataset y features
     logging.info("Model cross validation")
     logging.info("Loading data from " + dataset + " data set...")
     ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))
@@ -62,7 +66,16 @@ if __name__ == '__main__':
         i += 1
 
     logging.info("Loading features from file...")
-    f_global = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
+    f_global_all_features = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
+
+    # Eliminar variables
+    removed_features = np.arange(21, 34, 1)
+    shape = [f_global_all_features.shape[0],
+             f_global_all_features.shape[1],
+             f_global_all_features.shape[2] - len(removed_features)]
+    f_global = np.zeros(shape)
+    for i in range(f_global_all_features.shape[0]):
+        f_global[i] = np.delete(f_global_all_features[i], removed_features, axis=1)
 
     y = np.array(ds.targets)
     y = to_categorical(y)
@@ -87,6 +100,9 @@ if __name__ == '__main__':
 
     cvscores = []
 
+    logging.info("globalvars.attention_init_value = %s" % globalvars.attention_init_value)
+    logging.info("globalvars.nb_attention_param =  %s" % globalvars.nb_attention_param)
+
     i = 1
     for (train, test) in splits:
         # initialize the attention parameters with all same values for training and validation
@@ -98,9 +114,10 @@ if __name__ == '__main__':
         # create network
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
+        logging.info("create_softmax_la_network_2")  # NETWORK
         model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
                                                      nb_classes=nb_classes)
-
+        print(model)
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
@@ -155,6 +172,7 @@ if __name__ == '__main__':
 
         clear_session()
         i += 1
+        logging.info("\n")
 
 logging.info("Accuracy: " + "%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 end_time = datetime.now().strftime("%H:%M")

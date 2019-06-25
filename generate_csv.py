@@ -8,20 +8,16 @@ try:
 except ImportError:
     import pickle
 
-if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('name', action='store',
-                        help='Name of dataset')
-    args = parser.parse_args()
-    dataset = args.name
-    dataset_path = "data/" + dataset + "/"
 
-    print("Loading data from " + dataset + " data set...")
-    ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))
+def generate_csv(name_dataset):
+    dataset_path = "data/" + name_dataset + "/"
+
+    print("Loading data from " + name_dataset + " data set...")
+    ds = pickle.load(open(dataset_path + name_dataset + '_db.p', 'rb'))
     number_instances = len(ds.targets)
 
     print("Loading features from file...\n")
-    features = pickle.load(open(dataset_path + dataset + '_features.p', 'rb'))
+    features = pickle.load(open(dataset_path + name_dataset + '_features.p', 'rb'))
 
     # features.csv
     label_features = [
@@ -52,7 +48,7 @@ if __name__ == '__main__':
     df = df.set_index(["audio_number", "frame"])
 
     directory = "data/csv/"
-    name_save_csv = "features-" + dataset
+    name_save_csv = "features-" + name_dataset
     df.to_csv(path_or_buf=dataset_path + name_save_csv + ".csv", index=True)
 
     # emotions.csv
@@ -65,11 +61,21 @@ if __name__ == '__main__':
     for j in ds.subjects_audios:
         df_emotions.loc[j, "subject"] = i
         i += 1
-    name_save_csv = "emotions-" + dataset
+    name_save_csv = "emotions-" + name_dataset
     df_emotions.to_csv(path_or_buf=dataset_path + name_save_csv + ".csv", index=False)
 
-    # subjects_sex.csv
-    df_subjects_sex = pd.DataFrame(data=ds.subjects_sex, columns=["sex"], dtype="category")
-    df_subjects_sex["subject"] = df_subjects_sex.index
-    name_save_csv = "subjects_sex-" + dataset
-    df_subjects_sex.to_csv(path_or_buf=dataset_path + name_save_csv + ".csv", index=False)
+    # subjects_gender.csv
+    df_subjects_gender = pd.DataFrame(data=ds.subjects_gender, columns=["gender"], dtype="category")
+    df_subjects_gender["subject"] = df_subjects_gender.index
+    name_save_csv = "subjects_gender-" + name_dataset
+    df_subjects_gender.to_csv(path_or_buf=dataset_path + name_save_csv + ".csv", index=False)
+
+
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument('name', action='store',
+                        help='Name of dataset')
+    args = parser.parse_args()
+    name_dataset = args.name
+
+    generate_csv(name_dataset)
