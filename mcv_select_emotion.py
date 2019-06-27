@@ -43,7 +43,7 @@ if __name__ == '__main__':
     selected_emotion = args.emotions
     dataset_path = "data/" + dataset + "/"
 
-    model_path = dataset_path + datetime.now().strftime("%H:%M_%m-%d-%y") + "/"
+    model_path = dataset_path + datetime.now().strftime("%H:%M_%d-%m-%y") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
@@ -116,6 +116,7 @@ if __name__ == '__main__':
         """
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
         callback_list = [
             EarlyStopping(

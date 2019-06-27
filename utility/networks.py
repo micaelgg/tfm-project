@@ -5,6 +5,7 @@ from keras import backend as K
 
 from utility import globalvars
 
+import tensorflow as tf
 
 def create_softmax_la_network_2(input_shape, nb_classes, nb_lstm_cells=128):
     '''
@@ -13,6 +14,8 @@ def create_softmax_la_network_2(input_shape, nb_classes, nb_lstm_cells=128):
     Dense layers -> No activation
     BLSTM -> activation softsign
     '''
+
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
 
     with K.name_scope('BLSTMLayer'):
         # Bi-directional Long Short-Term Memory for learning the temporal aggregation
@@ -54,6 +57,8 @@ def create_softmax_la_network(input_shape, nb_classes, nb_lstm_cells=128):
     '''
     input_shape: (time_steps, features,)
     '''
+
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
 
     with K.name_scope('BLSTMLayer'):
         # Bi-directional Long Short-Term Memory for learning the temporal aggregation

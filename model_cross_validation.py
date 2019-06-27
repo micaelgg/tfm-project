@@ -30,7 +30,7 @@ except ImportError:
     import pickle
 
 if __name__ == '__main__':
-    # Almacenar datos de ejecución
+    # almacenar datos de ejecución
     parser = ArgumentParser()
     parser.add_argument('name', action='store',
                         help='Name of dataset')
@@ -39,9 +39,9 @@ if __name__ == '__main__':
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
 
-    # Crear directorio del modelo
+    # crear directorio del modelo
     start_time = datetime.now().strftime("%H:%M")
-    model_path = dataset_path + datetime.now().strftime("%H:%M_%m-%d-%y") + "/"
+    model_path = dataset_path + datetime.now().strftime("%H:%M_%d-%m-%y") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
@@ -49,10 +49,10 @@ if __name__ == '__main__':
         print("Directory ", model_path, " already exists")
     logging.basicConfig(filename=model_path + 'model_cross_validation.log',
                         level=logging.INFO,
-                        format="%(levelname)s: %(message)s")
+                        format="%(message)s")
 
-    # Cargar dataset y features
-    logging.info("Model cross validation")
+    # cargar dataset y features
+    logging.info("\t\tModel cross validation\n")
     logging.info("Loading data from " + dataset + " data set...")
     ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))
     nb_samples = len(ds.targets)
@@ -65,11 +65,13 @@ if __name__ == '__main__':
         logging.info(str(i) + " -> " + name_emo)
         i += 1
 
-    logging.info("Loading features from file...")
+    logging.info("\nLoading features from file...")
     f_global_all_features = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
 
-    # Eliminar variables
+    # eliminar variables no deseadas
     removed_features = np.arange(21, 34, 1)
+    label_features = np.delete(globalvars.label_features, removed_features)
+    logging.info("features = %s" % label_features)
     shape = [f_global_all_features.shape[0],
              f_global_all_features.shape[1],
              f_global_all_features.shape[2] - len(removed_features)]
@@ -77,9 +79,11 @@ if __name__ == '__main__':
     for i in range(f_global_all_features.shape[0]):
         f_global[i] = np.delete(f_global_all_features[i], removed_features, axis=1)
 
+    # cargar y adecuar el formato de la variable de salida
     y = np.array(ds.targets)
     y = to_categorical(y)
 
+    # crear los folds
     k_folds = 5
     kfold = KFold(n_splits=k_folds, shuffle=False, random_state=1)
     train_sets = []
@@ -96,13 +100,13 @@ if __name__ == '__main__':
         test_sets.append(k_test_sets.astype(int))
 
     splits = zip(train_sets, test_sets)
-    logging.info("Using speaker independence %s-fold cross validation" % k_folds)
+    logging.info("\nUsing speaker independence %s-fold cross validation" % k_folds)
 
-    cvscores = []
-
+    # Entrenamiento de NN
     logging.info("globalvars.attention_init_value = %s" % globalvars.attention_init_value)
     logging.info("globalvars.nb_attention_param =  %s" % globalvars.nb_attention_param)
 
+    cvscores = []
     i = 1
     for (train, test) in splits:
         # initialize the attention parameters with all same values for training and validation
@@ -114,6 +118,7 @@ if __name__ == '__main__':
         # create network
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
+        logging.info("\n %s-fold:" % i)
         logging.info("create_softmax_la_network_2")  # NETWORK
         model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
                                                      nb_classes=nb_classes)
@@ -148,7 +153,7 @@ if __name__ == '__main__':
 
         # fit the model
         hist = model.fit([u_train, f_global[train]], y[train],
-                         epochs=200,
+                         epochs=2,
                          batch_size=128,
                          verbose=2,
                          callbacks=callback_list,
@@ -163,18 +168,23 @@ if __name__ == '__main__':
 
         cvscores.append(scores[1] * 100)
 
-        logging.info("Getting the confusion matrix on whole set...")
+        logging.info("Getting the confusion matrix on WHOLE set...")
         u = np.full((f_global.shape[0], globalvars.nb_attention_param),
                     globalvars.attention_init_value, dtype=np.float32)
         predictions = best_model.predict([u, f_global])
         confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y)
         logging.info(confusion_matrix)
 
+        logging.info("Getting the confusion matrix on TEST set...")
+        predictions = best_model.predict([u_test, f_global[test]])
+        confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y[test])
+        logging.info(confusion_matrix)
+
         clear_session()
         i += 1
-        logging.info("\n")
 
-logging.info("Accuracy: " + "%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+# mensajes de fin de ejecución
+logging.info("\nAccuracy: " + "%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 end_time = datetime.now().strftime("%H:%M")
 logging.info("Start time: " + start_time)
 logging.info("End time: " + end_time)
