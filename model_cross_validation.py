@@ -34,14 +34,17 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('name', action='store',
                         help='Name of dataset')
+    parser.add_argument('network_number', action='store',
+                        help='Network')
     args = parser.parse_args()
     globalvars.dataset = args.name
+    network_number = int(args.network_number)
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
 
     # crear directorio del modelo
     start_time = datetime.now().strftime("%H:%M")
-    model_path = dataset_path + datetime.now().strftime("%H:%M_%d-%m-%y") + "/"
+    model_path = dataset_path + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
@@ -109,20 +112,43 @@ if __name__ == '__main__':
     cvscores = []
     i = 1
     for (train, test) in splits:
+        clear_session()
         # initialize the attention parameters with all same values for training and validation
-        u_train = np.full((len(train), globalvars.nb_attention_param),
-                          globalvars.attention_init_value, dtype=np.float32)
-        u_test = np.full((len(test), globalvars.nb_attention_param),
-                         globalvars.attention_init_value, dtype=np.float32)
 
         # create network
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
         logging.info("\n %s-fold:" % i)
-        logging.info("create_softmax_la_network_2")  # NETWORK
-        model = networks.create_softmax_la_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                     nb_classes=nb_classes)
-        print(model)
+
+        if network_number == 1:
+            logging.info("create_network_1")  # NETWORK
+            model = networks.create_network_1(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+        elif network_number == 2:
+            logging.info("create_network_2")  # NETWORK
+            model = networks.create_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+        elif network_number == 3:
+            logging.info("create_network_3")  # NETWORK
+            model = networks.create_network_3(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+        elif network_number == 4:
+            logging.info("create_network_4")  # NETWORK
+            model = networks.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+        elif network_number == 5:
+            logging.info("create_network_5")  # NETWORK
+            model = networks.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+        elif network_number == 6:
+            logging.info("create_network_6")  # NETWORK
+            model = networks.create_network_6(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+        elif network_number == 7:
+            logging.info("create_network_7")  # NETWORK
+            model = networks.create_network_7(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                              nb_classes=nb_classes)
+
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
@@ -152,18 +178,18 @@ if __name__ == '__main__':
         ]
 
         # fit the model
-        hist = model.fit([u_train, f_global[train]], y[train],
-                         epochs=2,
+        hist = model.fit(f_global[train], y[train],
+                         epochs=200,
                          batch_size=128,
                          verbose=2,
                          callbacks=callback_list,
-                         validation_data=([u_test, f_global[test]], y[test]))
+                         validation_data=(f_global[test], y[test]))
 
         # evaluate the best model in ith fold
         best_model = load_model(file_path)
 
         logging.info("Evaluating on test set...")
-        scores = best_model.evaluate([u_test, f_global[test]], y[test], batch_size=128, verbose=1)
+        scores = best_model.evaluate(f_global[test], y[test], batch_size=128, verbose=1)
         logging.info("The highest %s in %dth fold is %.2f%%" % (model.metrics_names[1], i, scores[1] * 100))
 
         cvscores.append(scores[1] * 100)
@@ -176,11 +202,10 @@ if __name__ == '__main__':
         logging.info(confusion_matrix)
 
         logging.info("Getting the confusion matrix on TEST set...")
-        predictions = best_model.predict([u_test, f_global[test]])
+        predictions = best_model.predict(f_global[test])
         confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y[test])
         logging.info(confusion_matrix)
 
-        clear_session()
         i += 1
 
 # mensajes de fin de ejecución

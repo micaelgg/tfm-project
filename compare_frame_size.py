@@ -51,6 +51,7 @@ def extract_features(dataset):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("name", help="name of dataset")
+    parser.add_argument("gender", help="male female both")
     parser.add_argument("path", help="path to dataset")
     parser.add_argument('-emotions', action='store', nargs='*',
                         default=[],
@@ -59,6 +60,7 @@ if __name__ == '__main__':
 
     name_dataset = args.name
     path_dataset = args.path
+    gender = args.gender
     emotions = args.emotions
 
     emotion_dic = {'anger': 0, 'disgust': 1, 'fear': 2, 'happiness': 3, 'sadness': 4, 'surprise': 5}
@@ -66,9 +68,9 @@ if __name__ == '__main__':
     number_emo = []
     for emo in emotions:
         number_emo.append(emotion_dic[emo])
-    name_save_csv = name_dataset + '-' + ''.join(str(e) for e in number_emo)
+    name_save_csv = name_dataset + "-" + gender + '-' + ''.join(str(e) for e in number_emo)
 
-    dataset = Dataset(path_dataset, name_dataset, emotions, number_emo, 0.03, 0.015)
+    dataset = Dataset(path_dataset, name_dataset, gender, emotions, number_emo, 0.03, 0.015)
     df_emotions = pd.Series(data=dataset.targets, name="emotion", dtype="category")
     df_emotions = df_emotions.map(lambda i: dataset.dictionary[i])
 
@@ -87,7 +89,7 @@ if __name__ == '__main__':
     for i in sizes:
         print("frame_size = " + str(i))
         print("step_size = " + str(i / 2))
-        dataset = Dataset(path_dataset, name_dataset, emotions, number_emo, i, i / 2)
+        dataset = Dataset(path_dataset, name_dataset, gender, emotions, number_emo, i, i / 2)
         features = extract_features(dataset)
         df_features = pd.DataFrame(data=features, columns=labels)
         df_aux = pd.concat([df_emotions, df_features], axis=1)
