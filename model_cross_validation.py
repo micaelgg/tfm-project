@@ -149,8 +149,6 @@ if __name__ == '__main__':
             model = networks.create_network_7(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
 
-        # compile the model
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
         callback_list = [
             EarlyStopping(
@@ -195,9 +193,7 @@ if __name__ == '__main__':
         cvscores.append(scores[1] * 100)
 
         logging.info("Getting the confusion matrix on WHOLE set...")
-        u = np.full((f_global.shape[0], globalvars.nb_attention_param),
-                    globalvars.attention_init_value, dtype=np.float32)
-        predictions = best_model.predict([u, f_global])
+        predictions = best_model.predict(f_global)
         confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y)
         logging.info(confusion_matrix)
 

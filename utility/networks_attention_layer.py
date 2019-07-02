@@ -91,7 +91,7 @@ https://github.com/RayanWang/Speech_emotion_recognition_BLSTM/blob/master/utilit
 """
 
 
-def create_network(input_shape, nb_classes, nb_lstm_cells=128):
+def create_network_1(input_shape, nb_classes, nb_lstm_cells=128):
     '''
     input_shape: (time_steps, features,)
     '''

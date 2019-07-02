@@ -11,7 +11,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 from keras.callbacks import CSVLogger
 from keras.models import load_model
-from utility import networks, metrics_util, globalvars
+from utility import networks_attention_layer, metrics_util, globalvars
 
 from keras.backend import clear_session
 
@@ -126,32 +126,32 @@ if __name__ == '__main__':
 
         if network_number == 1:
             logging.info("create_network_1")  # NETWORK
-            model = networks.create_network_1(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_1(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
         elif network_number == 2:
             logging.info("create_network_2")  # NETWORK
-            model = networks.create_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
         elif network_number == 3:
             logging.info("create_network_3")  # NETWORK
-            model = networks.create_network_3(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_3(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
         elif network_number == 4:
             logging.info("create_network_4")  # NETWORK
-            model = networks.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
         elif network_number == 5:
             logging.info("create_network_5")  # NETWORK
-            model = networks.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
         elif network_number == 6:
             logging.info("create_network_6")  # NETWORK
-            model = networks.create_network_6(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_6(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
         elif network_number == 7:
             logging.info("create_network_7")  # NETWORK
-            model = networks.create_network_7(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                              nb_classes=nb_classes)
+            model = networks_attention_layer.create_network_7(input_shape=(globalvars.max_len, globalvars.nb_features),
+                                                              nb_classes=nb_classes)
 
         # compile the model
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -184,7 +184,7 @@ if __name__ == '__main__':
         # fit the model
         hist = model.fit([u_train, f_global[train]], y[train],
                          epochs=200,
-                         batch_size=128,
+                         batch_size=64,
                          verbose=2,
                          callbacks=callback_list,
                          validation_data=([u_test, f_global[test]], y[test]))
