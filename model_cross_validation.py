@@ -14,15 +14,18 @@ from keras.models import load_model
 from utility import networks, metrics_util, globalvars
 
 from keras.backend import clear_session
+from keras.utils.vis_utils import plot_model
 
 from sklearn.model_selection import KFold
+from sklearn.metrics import classification_report
 
 from datetime import datetime
 
 import numpy as np
 import os
 import sys
-import logging
+import json
+from io import StringIO
 
 try:
     import cPickle as pickle
@@ -50,37 +53,41 @@ if __name__ == '__main__':
         print("Directory ", model_path, " Created ")
     except FileExistsError:
         print("Directory ", model_path, " already exists")
-    logging.basicConfig(filename=model_path + 'model_cross_validation.log',
-                        level=logging.INFO,
-                        format="%(message)s")
 
-    # cargar dataset y features
-    logging.info("\t\tModel cross validation\n")
-    logging.info("Loading data from " + dataset + " data set...")
+    # variables para la construcción "manual" del log
+    logging_text = "\t\tModel cross validation\n"
+    text_1 = ""
+    text_2 = ""
+    text_3 = ""
+    text_4 = ""
+
+    # cargar dataset
+
     ds = pickle.load(open(dataset_path + dataset + '_db.p', 'rb'))
     nb_samples = len(ds.targets)
-    logging.info("Number of samples: " + str(nb_samples))
     globalvars.nb_classes = len(np.unique(ds.targets))
     nb_classes = globalvars.nb_classes
-    logging.info("Number of classes: " + str(globalvars.nb_classes))
-    i = 0
-    for name_emo in ds.name_emotions:
-        logging.info(str(i) + " -> " + name_emo)
-        i += 1
 
-    logging.info("\nLoading features from file...")
+    text_1 += "\n" + "Loading data from " + dataset
+    text_1 += "\n" + "name_dataset = " + ds.name_dataset
+    text_1 += "\n" + "frame_size = " + str(ds.frame_size)
+    text_1 += "\n" + "step_size = " + str(ds.step)
+    text_1 += "\n" + "gender = " + dataset.split("-")[1]
+    text_1 += "\n" + "emotions = " + str(ds.name_emotions)
+
+    #  cargar y eliminar variables
     f_global_all_features = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
-
-    # eliminar variables no deseadas
     removed_features = np.arange(21, 34, 1)
     label_features = np.delete(globalvars.label_features, removed_features)
-    logging.info("features = %s" % label_features)
     shape = [f_global_all_features.shape[0],
              f_global_all_features.shape[1],
              f_global_all_features.shape[2] - len(removed_features)]
     f_global = np.zeros(shape)
     for i in range(f_global_all_features.shape[0]):
         f_global[i] = np.delete(f_global_all_features[i], removed_features, axis=1)
+
+    text_1 += "\n\n" + "Loading features from file..."
+    text_1 += "\n" + "features " + str(label_features)
 
     # cargar y adecuar el formato de la variable de salida
     y = np.array(ds.targets)
@@ -103,49 +110,43 @@ if __name__ == '__main__':
         test_sets.append(k_test_sets.astype(int))
 
     splits = zip(train_sets, test_sets)
-    logging.info("\nUsing speaker independence %s-fold cross validation" % k_folds)
 
     # Entrenamiento de NN
-    logging.info("globalvars.attention_init_value = %s" % globalvars.attention_init_value)
-    logging.info("globalvars.nb_attention_param =  %s" % globalvars.nb_attention_param)
-
     cvscores = []
     i = 1
     for (train, test) in splits:
         clear_session()
-        # initialize the attention parameters with all same values for training and validation
 
         # create network
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
-        logging.info("\n %s-fold:" % i)
 
         if network_number == 1:
-            logging.info("create_network_1")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_1"  # NETWORK
             model = networks.create_network_1(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
         elif network_number == 2:
-            logging.info("create_network_2")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_2"  # NETWORK
             model = networks.create_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
         elif network_number == 3:
-            logging.info("create_network_3")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_3"  # NETWORK
             model = networks.create_network_3(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
         elif network_number == 4:
-            logging.info("create_network_4")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_4"  # NETWORK
             model = networks.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
         elif network_number == 5:
-            logging.info("create_network_5")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_5"  # NETWORK
             model = networks.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
         elif network_number == 6:
-            logging.info("create_network_6")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_6"  # NETWORK
             model = networks.create_network_6(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
         elif network_number == 7:
-            logging.info("create_network_7")  # NETWORK
+            text_2 = "\n\n\n\t" + "create_network_7"  # NETWORK
             model = networks.create_network_7(input_shape=(globalvars.max_len, globalvars.nb_features),
                                               nb_classes=nb_classes)
 
@@ -175,10 +176,13 @@ if __name__ == '__main__':
             )
         ]
 
+        batch_size = 128
+        epochs = 1
+
         # fit the model
         hist = model.fit(f_global[train], y[train],
-                         epochs=200,
-                         batch_size=128,
+                         epochs=epochs,
+                         batch_size=batch_size,
                          verbose=2,
                          callbacks=callback_list,
                          validation_data=(f_global[test], y[test]))
@@ -186,27 +190,59 @@ if __name__ == '__main__':
         # evaluate the best model in ith fold
         best_model = load_model(file_path)
 
-        logging.info("Evaluating on test set...")
-        scores = best_model.evaluate(f_global[test], y[test], batch_size=128, verbose=1)
-        logging.info("The highest %s in %dth fold is %.2f%%" % (model.metrics_names[1], i, scores[1] * 100))
+        model_json = best_model.to_json()
+        with open(model_path + "best_model" + str(i) + ".json", "w") as json_file:
+            json_file.write(model_json)
 
+        scores = best_model.evaluate(f_global[test], y[test], batch_size=batch_size, verbose=1)
         cvscores.append(scores[1] * 100)
 
-        logging.info("Getting the confusion matrix on WHOLE set...")
-        predictions = best_model.predict(f_global)
-        confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y)
-        logging.info(confusion_matrix)
+        predictions_whole_set = best_model.predict(f_global)
+        confusion_matrix_whole_set = metrics_util.get_confusion_matrix_one_hot(predictions_whole_set, y)
 
-        logging.info("Getting the confusion matrix on TEST set...")
-        predictions = best_model.predict(f_global[test])
-        confusion_matrix = metrics_util.get_confusion_matrix_one_hot(predictions, y[test])
-        logging.info(confusion_matrix)
+        predictions_test_set = best_model.predict(f_global[test])
+        confusion_matrix_test_set = metrics_util.get_confusion_matrix_one_hot(predictions_test_set, y[test])
+
+        class_report = (classification_report(y_pred=predictions_test_set.argmax(axis=1), y_true=y[test].argmax(axis=1),
+                                              target_names=ds.name_emotions))
+
+        text_3 += "\n\n\n\t" + str(i) + "-fold:"
+        text_3 += "\n" + "Evaluating on test set... "
+        text_3 += "\n" + "The highest acc is " + str(round(scores[1] * 100, 2)) + "%"
+        text_3 += "\n\n" + "Getting the confusion matrix on WHOLE set..."
+        text_3 += "\n" + str(confusion_matrix_whole_set)
+        text_3 += "\n\n" + "Getting the confusion matrix on TEST set..."
+        text_3 += "\n" + str(confusion_matrix_test_set)
+        text_3 += "\n\n" + "Classification_report"
+        text_3 += "\n" + str(class_report)
 
         i += 1
 
+# mensajes de información sobre la red
+text_2 += "\n" + "globalvars.attention_init_value = " + str(globalvars.attention_init_value)
+text_2 += "\n" + "globalvars.nb_attention_param = " + str(globalvars.nb_attention_param)
+text_2 += "\n" + str(json.dumps(hist.params))
+tmp_smry = StringIO()
+model.summary(print_fn=lambda x: tmp_smry.write(x + '\n'))
+text_2 += "\n" + tmp_smry.getvalue()
+
+text_2 += "\n\n" + "Using speaker independence" + str(k_folds) + "-fold cross validation"
+text_2 += "\n" + str(kfold)
+
+plot_model(model, to_file=model_path + 'model_plot.png', show_shapes=True, show_layer_names=True)
+
 # mensajes de fin de ejecución
-logging.info("\nAccuracy: " + "%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 end_time = datetime.now().strftime("%H:%M")
-logging.info("Start time: " + start_time)
-logging.info("End time: " + end_time)
+text_4 += "\n\n\n" + "\tUsing speaker independence " + str(k_folds) + "-fold cross validation"
+text_4 += "\n" + "Accuracy = " + str(round(np.mean(cvscores), 2))
+text_4 += "\n" + "Standard deviation = " + str(round(np.std(cvscores), 2))
+text_4 += "\n\n" + "Start time: " + start_time
+text_4 += "\n" + "End time: " + end_time
+
+# guardar logging
+logging_text += text_1 + text_2 + text_3 + text_4
+f = open(model_path + 'model_cross_validation.log', 'w')
+f.write(logging_text)
+f.close()
+
 sys.exit()

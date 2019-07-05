@@ -42,7 +42,9 @@ def create_network_3(input_shape, nb_classes, nb_lstm_cells=128):
         # Get posterior probability for each emotional class
         output = Dense(nb_classes, activation='softmax')(z)
 
-    return Model(inputs=[input_attention, input_feature], outputs=output)
+    model = Model(inputs=[input_attention, input_feature], outputs=output)
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
 
 
 def create_network_2(input_shape, nb_classes, nb_lstm_cells=128):
@@ -82,7 +84,9 @@ def create_network_2(input_shape, nb_classes, nb_lstm_cells=128):
         # Get posterior probability for each emotional class
         output = Dense(nb_classes, activation='softmax')(z)
 
-    return Model(inputs=[input_attention, input_feature], outputs=output)
+    model = Model(inputs=[input_attention, input_feature], outputs=output)
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
 
 
 """
@@ -91,12 +95,11 @@ https://github.com/RayanWang/Speech_emotion_recognition_BLSTM/blob/master/utilit
 """
 
 
+# Red original SER_BLSTM
 def create_network_1(input_shape, nb_classes, nb_lstm_cells=128):
     '''
-    input_shape: (time_steps, features,)
+     input_shape: (time_steps, features,)
     '''
-
-    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
 
     with K.name_scope('BLSTMLayer'):
         # Bi-directional Long Short-Term Memory for learning the temporal aggregation
@@ -121,8 +124,9 @@ def create_network_1(input_shape, nb_classes, nb_lstm_cells=128):
         # Weighted pooling to get the utterance-level representation
         z = dot([alpha, y], axes=1)
 
-    with K.name_scope('OUTPUT'):
-        # Get posterior probability for each emotional class
-        output = Dense(nb_classes, activation='softmax')(z)
+    # Get posterior probability for each emotional class
+    output = Dense(nb_classes, activation='softmax')(z)
 
-    return Model(inputs=[input_attention, input_feature], outputs=output)
+    model = Model(inputs=[input_attention, input_feature], outputs=output)
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
