@@ -37,16 +37,19 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('name', action='store',
                         help='Name of dataset')
-    parser.add_argument('network_number', action='store',
+    parser.add_argument('network_name', action='store',
+                        help='Network')
+    parser.add_argument('mini_batch', action='store',
                         help='Network')
     args = parser.parse_args()
     globalvars.dataset = args.name
-    network_number = int(args.network_number)
+    network_name = args.network_name
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
+    mini_batch = int(args.mini_batch)
 
     # crear directorio del modelo
-    start_time = datetime.now().strftime("%H:%M")
+    start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     model_path = dataset_path + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
     try:
         os.makedirs(model_path)
@@ -126,40 +129,14 @@ if __name__ == '__main__':
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
 
-        if network_number == 1:
-            text_2 = "\n\n\n\t" + "create_network_1"  # NETWORK
-            model = networks_attention_layer.create_network_1(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
-        elif network_number == 2:
-            text_2 = "\n\n\n\t" + "create_network_2"  # NETWORK
-            model = networks_attention_layer.create_network_2(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
-        elif network_number == 3:
-            text_2 = "\n\n\n\t" + "create_network_3"  # NETWORK
-            model = networks_attention_layer.create_network_3(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
-        elif network_number == 4:
-            text_2 = "\n\n\n\t" + "create_network_4"  # NETWORK
-            model = networks_attention_layer.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
-        elif network_number == 5:
-            text_2 = "\n\n\n\t" + "create_network_5"  # NETWORK
-            model = networks_attention_layer.create_network_5(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
-        elif network_number == 6:
-            text_2 = "\n\n\n\t" + "create_network_6"  # NETWORK
-            model = networks_attention_layer.create_network_6(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
-        elif network_number == 7:
-            text_2 = "\n\n\n\t" + "create_network_7"  # NETWORK
-            model = networks_attention_layer.create_network_7(input_shape=(globalvars.max_len, globalvars.nb_features),
-                                                              nb_classes=nb_classes)
+        model = networks_attention_layer.select_network(network_name)
+        text_2 = "\n\n\n\t" + model.name  # NETWORK
 
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
         callback_list = [
             EarlyStopping(
                 monitor='val_loss',
-                patience=20,
+                patience=40,
                 verbose=1,
                 mode='auto'
             ),
@@ -172,7 +149,7 @@ if __name__ == '__main__':
             ),
             TensorBoard(
                 log_dir=model_path + '/Graph/' + str(i) + "_fold",
-                histogram_freq=10,
+                histogram_freq=2,
                 write_graph=True,
                 write_images=True
             ),
@@ -181,8 +158,8 @@ if __name__ == '__main__':
             )
         ]
 
-        batch_size = 128
-        epochs = 200
+        batch_size = mini_batch
+        epochs = 300
 
         # fit the model
         hist = model.fit([u_train, f_global[train]], y[train],

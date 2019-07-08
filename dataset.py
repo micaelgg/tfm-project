@@ -70,7 +70,7 @@ class Dataset:
             actual_subject = audio_splitted[6]
             if target in emotions and intensity == "02" and actual_subject in selected_subjects:
                 audio_path = os.path.join(path, audio)
-                [x, Fs] = librosa.load(audio_path, sr=16000)
+                [x, Fs] = librosa.load(audio_path, sr=44100)
                 self.data.append((x, Fs))
                 targets.append(target)
                 subject = int(np.where(selected_subjects == actual_subject)[0])
@@ -83,6 +83,7 @@ class Dataset:
         for original in targets:
             self.targets.append(self.emotions.index(original))
 
+    # TODO Cambiar la frecuencia de muestreo en todos, 16k es baja
     def get_berlin_dataset(self, path, gender, emotions):
         """ name format = 03a01Fa
         anger=W, boredom=L, disgust=E, anxiety/fear=A, happiness=F, sadness=T, neutral version=N"""
