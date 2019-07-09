@@ -1,0 +1,214 @@
+		Model cross validation
+
+Loading data from ravdess-male-0.025-01234
+name_dataset = ravdess
+frame_size = 0.025
+step_size = 0.0125
+gender = male
+emotions = ['anger', 'disgust', 'fear', 'happiness', 'sadness']
+
+Loading features from file...
+features ['mfcc_1' 'mfcc_2' 'mfcc_3' 'mfcc_4' 'mfcc_5' 'mfcc_6' 'mfcc_7' 'mfcc_8'
+ 'mfcc_9' 'mfcc_10' 'mfcc_11' 'mfcc_12' 'mfcc_13']
+
+
+	create_network_6
+globalvars.attention_init_value = 0.00390625
+globalvars.nb_attention_param = 256
+{"batch_size": 128, "epochs": 250, "steps": null, "samples": 200, "verbose": 2, "do_validation": true, "metrics": ["loss", "categorical_accuracy", "val_loss", "val_categorical_accuracy"]}
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+masking_1 (Masking)          (None, 1024, 13)          0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 1024, 128)         1792      
+_________________________________________________________________
+lstm_1 (LSTM)                (None, 1024, 64)          49408     
+_________________________________________________________________
+lstm_2 (LSTM)                (None, 1024, 64)          33024     
+_________________________________________________________________
+lstm_3 (LSTM)                (None, 64)                33024     
+_________________________________________________________________
+dense_2 (Dense)              (None, 5)                 325       
+=================================================================
+Total params: 117,573
+Trainable params: 117,573
+Non-trainable params: 0
+_________________________________________________________________
+
+
+Using speaker independence5-fold cross validation
+KFold(n_splits=5, random_state=1, shuffle=False)
+
+
+	1-fold:
+Evaluating on test set... 
+The highest acc is 71.67%
+
+Getting the confusion matrix on WHOLE set...
+[[43  3  0  2  0]
+ [ 0 45  0  0  3]
+ [ 3  0 29 11  5]
+ [ 0  4  6 32  6]
+ [ 0  2  3  1 42]]
+
+Getting the confusion matrix on TEST set...
+[[ 9  2  0  1  0]
+ [ 0 10  0  0  2]
+ [ 1  0  9  1  1]
+ [ 0  2  0  7  3]
+ [ 0  1  2  1  8]]
+
+Classification_report
+              precision    recall  f1-score   support
+
+       anger       0.90      0.75      0.82        12
+     disgust       0.67      0.83      0.74        12
+        fear       0.82      0.75      0.78        12
+   happiness       0.70      0.58      0.64        12
+     sadness       0.57      0.67      0.62        12
+
+   micro avg       0.72      0.72      0.72        60
+   macro avg       0.73      0.72      0.72        60
+weighted avg       0.73      0.72      0.72        60
+
+
+
+	2-fold:
+Evaluating on test set... 
+The highest acc is 70.0%
+
+Getting the confusion matrix on WHOLE set...
+[[46  2  0  0  0]
+ [ 0 47  0  0  1]
+ [ 6  0 23 15  4]
+ [ 0  6  3 39  0]
+ [ 0  8  1  3 36]]
+
+Getting the confusion matrix on TEST set...
+[[10  2  0  0  0]
+ [ 0 11  0  0  1]
+ [ 3  0  4  2  3]
+ [ 0  2  2  8  0]
+ [ 0  2  0  1  9]]
+
+Classification_report
+              precision    recall  f1-score   support
+
+       anger       0.77      0.83      0.80        12
+     disgust       0.65      0.92      0.76        12
+        fear       0.67      0.33      0.44        12
+   happiness       0.73      0.67      0.70        12
+     sadness       0.69      0.75      0.72        12
+
+   micro avg       0.70      0.70      0.70        60
+   macro avg       0.70      0.70      0.68        60
+weighted avg       0.70      0.70      0.68        60
+
+
+
+	3-fold:
+Evaluating on test set... 
+The highest acc is 70.0%
+
+Getting the confusion matrix on WHOLE set...
+[[44  0  2  2  0]
+ [ 2 41  0  2  3]
+ [ 3  0 44  0  1]
+ [ 0  0 12 32  4]
+ [ 0  2  4  2 40]]
+
+Getting the confusion matrix on TEST set...
+[[8 0 0 0 0]
+ [2 6 0 0 0]
+ [2 0 6 0 0]
+ [0 0 4 4 0]
+ [0 2 2 0 4]]
+
+Classification_report
+              precision    recall  f1-score   support
+
+       anger       0.67      1.00      0.80         8
+     disgust       0.75      0.75      0.75         8
+        fear       0.50      0.75      0.60         8
+   happiness       1.00      0.50      0.67         8
+     sadness       1.00      0.50      0.67         8
+
+   micro avg       0.70      0.70      0.70        40
+   macro avg       0.78      0.70      0.70        40
+weighted avg       0.78      0.70      0.70        40
+
+
+
+	4-fold:
+Evaluating on test set... 
+The highest acc is 72.5%
+
+Getting the confusion matrix on WHOLE set...
+[[46  0  1  1  0]
+ [ 5 39  1  3  0]
+ [ 6  0 32  5  5]
+ [ 5  2  8 32  1]
+ [ 0  2  3  2 41]]
+
+Getting the confusion matrix on TEST set...
+[[7 0 1 0 0]
+ [1 5 1 1 0]
+ [0 0 7 1 0]
+ [0 2 1 4 1]
+ [0 1 1 0 6]]
+
+Classification_report
+              precision    recall  f1-score   support
+
+       anger       0.88      0.88      0.88         8
+     disgust       0.62      0.62      0.62         8
+        fear       0.64      0.88      0.74         8
+   happiness       0.67      0.50      0.57         8
+     sadness       0.86      0.75      0.80         8
+
+   micro avg       0.72      0.72      0.73        40
+   macro avg       0.73      0.72      0.72        40
+weighted avg       0.73      0.72      0.72        40
+
+
+
+	5-fold:
+Evaluating on test set... 
+The highest acc is 75.0%
+
+Getting the confusion matrix on WHOLE set...
+[[43  0  5  0  0]
+ [ 0 42  0  2  4]
+ [ 3  0 38  2  5]
+ [ 5  0  9 30  4]
+ [ 0  1  0  2 45]]
+
+Getting the confusion matrix on TEST set...
+[[7 0 1 0 0]
+ [0 7 0 0 1]
+ [0 0 4 1 3]
+ [3 0 1 4 0]
+ [0 0 0 0 8]]
+
+Classification_report
+              precision    recall  f1-score   support
+
+       anger       0.70      0.88      0.78         8
+     disgust       1.00      0.88      0.93         8
+        fear       0.67      0.50      0.57         8
+   happiness       0.80      0.50      0.62         8
+     sadness       0.67      1.00      0.80         8
+
+   micro avg       0.75      0.75      0.75        40
+   macro avg       0.77      0.75      0.74        40
+weighted avg       0.77      0.75      0.74        40
+
+
+
+	Using speaker independence 5-fold cross validation
+Accuracy = 71.83
+Standard deviation = 1.86
+
+Start time: 06-07-2019 19:48:15
+End time: 06-07-2019 21:47:34
