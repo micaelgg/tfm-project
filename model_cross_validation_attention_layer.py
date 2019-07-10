@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     #  cargar y eliminar variables
     f_global_all_features = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
-    removed_features = np.arange(21, 34, 1)
+    removed_features = np.arange(23, 36, 1)
     label_features = np.delete(globalvars.label_features, removed_features)
     shape = [f_global_all_features.shape[0],
              f_global_all_features.shape[1],

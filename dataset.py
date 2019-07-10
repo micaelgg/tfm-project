@@ -68,9 +68,11 @@ class Dataset:
             target = classes[audio_splitted[2]]
             intensity = audio_splitted[3]
             actual_subject = audio_splitted[6]
+            # if target in emotions and actual_subject in selected_subjects:
             if target in emotions and intensity == "02" and actual_subject in selected_subjects:
                 audio_path = os.path.join(path, audio)
-                [x, Fs] = librosa.load(audio_path, sr=44100)
+                # [x, Fs] = librosa.load(audio_path, sr=48000)
+                [x, Fs] = librosa.load(audio_path, sr=16000)
                 self.data.append((x, Fs))
                 targets.append(target)
                 subject = int(np.where(selected_subjects == actual_subject)[0])

@@ -207,6 +207,81 @@ def LSTM_7(input_shape, nb_classes):
         return model
 
 
+def LSTM_10(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        # Bi-directional Long Short-Term Memory for learning the temporal aggregation
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_11(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        # Bi-directional Long Short-Term Memory for learning the temporal aggregation
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_12(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        # Bi-directional Long Short-Term Memory for learning the temporal aggregation
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
 ######################################################################################
 ######################################   LFLB   ######################################
 ######################################################################################
@@ -254,6 +329,7 @@ def LFLB_1(input_shape, nb_classes, nb_lstm_cells=64):
 def LFLB_2(input_shape, nb_classes, nb_lstm_cells=64):
     model = Sequential(name=inspect.stack()[0][3])
     input_shape = (input_shape[0], input_shape[1], 1)
+
     # LFLB1
     model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_last',
                      input_shape=input_shape))
@@ -394,6 +470,15 @@ def select_network(network_name):
         elif network_number == 7:
             model = LSTM_7(input_shape=(globalvars.max_len, globalvars.nb_features),
                            nb_classes=globalvars.nb_classes)
+        elif network_number == 10:
+            model = LSTM_10(input_shape=(globalvars.max_len, globalvars.nb_features),
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 11:
+            model = LSTM_11(input_shape=(globalvars.max_len, globalvars.nb_features),
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 12:
+            model = LSTM_12(input_shape=(globalvars.max_len, globalvars.nb_features),
+                            nb_classes=globalvars.nb_classes)
 
     if network_type == "CNN":
         if network_number == 1:

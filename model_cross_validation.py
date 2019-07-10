@@ -41,16 +41,20 @@ if __name__ == '__main__':
                         help='Network')
     parser.add_argument('mini_batch', action='store',
                         help='Network')
+    parser.add_argument('features_group', action='store',
+                        help='mfcc no-mfcc all')
     args = parser.parse_args()
     globalvars.dataset = args.name
     network_name = args.network_name
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
     mini_batch = int(args.mini_batch)
+    features_group = args.features_group
 
     # crear directorio del modelo
     start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    model_path = dataset_path + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
+    args_name = network_name + "-" + str(mini_batch) + "-" + features_group + "_"
+    model_path = dataset_path + args_name + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
@@ -84,7 +88,14 @@ if __name__ == '__main__':
     removed_features = np.arange(21, 34, 1)
     label_features = np.delete(globalvars.label_features, removed_features)
     """
-    removed_features = np.concatenate((np.arange(0, 8, 1), np.arange(21, 36, 1)))
+
+    if features_group == "mfcc":
+        removed_features = np.concatenate((np.arange(0, 10, 1), np.arange(23, 36, 1)))
+    elif features_group == "no-mfcc":
+        removed_features = np.arange(10, 36, 1)
+    elif features_group == "all":
+        removed_features = np.arange(23, 36, 1)
+
     label_features = np.delete(globalvars.label_features, removed_features)
 
     shape = [f_global_all_features.shape[0],
@@ -159,7 +170,7 @@ if __name__ == '__main__':
         ]
 
         batch_size = mini_batch
-        epochs = 300
+        epochs = 2
 
         # fit the model
         hist = model.fit(f_global[train], y[train],

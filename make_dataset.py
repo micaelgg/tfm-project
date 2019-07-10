@@ -36,7 +36,7 @@ def extract_features(dataset):
 
         # Harmonic ratio and pitch, 2D
         hr_pitch = audioFeatureExtraction.stFeatureSpeed(x, Fs, frame_size * Fs, step * Fs)
-        f = np.append(f, hr_pitch.transpose(), axis=0)
+        f = np.append(hr_pitch.transpose(), f, axis=0)
 
         f = f.transpose()
 
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     features, features_concatenate = extract_features(dataset)
 
-    scaler = preprocessing.MinMaxScaler().fit(features_concatenate)
+    scaler = preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit(features_concatenate)
 
     for i in range(len(features)):
         features[i] = scaler.transform(features[i])
