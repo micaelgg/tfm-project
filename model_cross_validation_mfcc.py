@@ -11,7 +11,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 from keras.callbacks import CSVLogger
 from keras.models import load_model, Model
-from utility import networks, metrics_util, globalvars
+from utility import networks_mfcc_deltas, metrics_util, globalvars
 
 from keras.backend import clear_session
 from keras.utils.vis_utils import plot_model
@@ -41,19 +41,16 @@ if __name__ == '__main__':
                         help='Network')
     parser.add_argument('mini_batch', action='store',
                         help='Network')
-    parser.add_argument('features_group', action='store',
-                        help='mfcc no-mfcc all')
     args = parser.parse_args()
     globalvars.dataset = args.name
     network_name = args.network_name
     dataset = args.name
     dataset_path = "data/" + dataset + "/"
     mini_batch = int(args.mini_batch)
-    features_group = args.features_group
 
     # crear directorio del modelo
     start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    args_name = network_name + "-" + str(mini_batch) + "-" + features_group + "_"
+    args_name = network_name + "-" + str(mini_batch) + "_"
     model_path = dataset_path + args_name + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
     try:
         os.makedirs(model_path)
@@ -62,7 +59,7 @@ if __name__ == '__main__':
         print("Directory ", model_path, " already exists")
 
     # variables para la construcción "manual" del log
-    logging_text = "\t\tModel cross validation\n"
+    logging_text = "\t\tModel cross validation - MFCC \n"
     text_1 = ""
     text_2 = ""
     text_3 = ""
@@ -82,31 +79,10 @@ if __name__ == '__main__':
     text_1 += "\n" + "gender = " + dataset.split("-")[1]
     text_1 += "\n" + "emotions = " + str(ds.name_emotions)
 
-    #  cargar y eliminar variables
-    f_global_all_features = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
-    """
-    removed_features = np.arange(21, 34, 1)
-    label_features = np.delete(globalvars.label_features, removed_features)
-    """
-
-    if features_group == "mfcc":
-        removed_features = np.concatenate((np.arange(0, 10, 1), np.arange(23, 36, 1)))
-    elif features_group == "no-mfcc":
-        removed_features = np.arange(10, 36, 1)
-    elif features_group == "all":
-        removed_features = np.arange(23, 36, 1)
-
-    label_features = np.delete(globalvars.label_features, removed_features)
-
-    shape = [f_global_all_features.shape[0],
-             f_global_all_features.shape[1],
-             f_global_all_features.shape[2] - len(removed_features)]
-    f_global = np.zeros(shape)
-    for i in range(f_global_all_features.shape[0]):
-        f_global[i] = np.delete(f_global_all_features[i], removed_features, axis=1)
+    #  cargar variables
+    f_global = pickle.load(open(dataset_path + dataset + '_features_sequence.p', 'rb'))
 
     text_1 += "\n\n" + "Loading features from file..."
-    text_1 += "\n" + "features " + str(label_features)
 
     # cargar y adecuar el formato de la variable de salida
     y = np.array(ds.targets)
@@ -140,14 +116,17 @@ if __name__ == '__main__':
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
 
-        model = networks.select_network(network_name)
+        # input_shape = (3, 75, 75) channels_first
+        input_shape = (f_global.shape[1], f_global.shape[2], f_global.shape[3])
+
+        model = networks_mfcc_deltas.select_network(network_name, input_shape)
         text_2 = "\n\n\n\t" + model.name  # NETWORK
 
         file_path = model_path + 'weights_' + str(i) + '_fold' + '.h5'
         callback_list = [
             EarlyStopping(
                 monitor='val_loss',
-                patience=50,
+                patience=30,
                 verbose=1,
                 mode='auto'
             ),
@@ -170,10 +149,11 @@ if __name__ == '__main__':
         ]
 
         batch_size = mini_batch
-        epochs = 300
+        epochs = 1000
 
         # fit the model
-        hist = model.fit(f_global[train], y[train],
+        hist = model.fit(x=f_global[train],
+                         y=y[train],
                          epochs=epochs,
                          batch_size=batch_size,
                          verbose=2,

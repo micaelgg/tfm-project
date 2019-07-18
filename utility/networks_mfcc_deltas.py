@@ -211,48 +211,7 @@ def LSTM_7(input_shape, nb_classes):
 ######################################################################################
 ######################################   LFLB   ######################################
 ######################################################################################
-def LFLB_1(input_shape, nb_classes, nb_lstm_cells=64):
-    model = Sequential(name=inspect.stack()[0][3])
-
-    # LFLB1
-    model.add(Conv1D(filters=64, kernel_size=(3), strides=1, padding='same', data_format='channels_last',
-                     input_shape=input_shape))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(MaxPooling1D(pool_size=4, strides=4))
-
-    # LFLB2
-    model.add(Conv1D(filters=64, kernel_size=3, strides=1, padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(MaxPooling1D(pool_size=4, strides=4))
-
-    # LFLB3
-    model.add(Conv1D(filters=128, kernel_size=3, strides=1, padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(MaxPooling1D(pool_size=4, strides=4))
-
-    # LFLB4
-    model.add(Conv1D(filters=128, kernel_size=3, strides=1, padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(MaxPooling1D(pool_size=4, strides=4))
-
-    # LSTM
-    model.add(LSTM(units=256))
-
-    # FC
-    model.add(Dense(units=nb_classes, activation='softmax'))
-
-    # Model compilation
-    opt = optimizers.SGD(lr=0.0001, decay=1e-6, momentum=0.9, nesterov=True)
-
-    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
-    return model
-
-
-def LFLB_2(input_shape, nb_classes, nb_lstm_cells=64):
+def LFLB_1(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
     input_shape = input_shape
     # LFLB1
@@ -289,6 +248,44 @@ def LFLB_2(input_shape, nb_classes, nb_lstm_cells=64):
     return model
 
 
+# CAMBIA EL OPTIMIZADOR
+def LFLB_2(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(units=256))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+    return model
+
+
 def LFLB_3(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
     input_shape = input_shape
@@ -297,31 +294,30 @@ def LFLB_3(input_shape, nb_classes):
                      input_shape=input_shape))
     model.add(BatchNormalization())
     model.add(Activation('elu'))
+
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
     # LFLB2
-    model.add(Dropout(rate=0.5))
     model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
     model.add(BatchNormalization())
     model.add(Activation('elu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
     # LFLB3
-    model.add(Dropout(rate=0.5))
     model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
     model.add(BatchNormalization())
     model.add(Activation('elu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
     # LSTM
-    # model.add(LSTM(units=256))
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(units=256))
 
     # FC
-    model.add(Flatten())
     model.add(Dense(units=nb_classes, activation='softmax'))
 
     # Model compilation
-    opt = optimizers.SGD(lr=0.00001, decay=1e-6, momentum=0.9, nesterov=True)
+    opt = optimizers.Adagrad(lr=0.01, epsilon=None, decay=0.0)
 
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
     return model
@@ -329,11 +325,75 @@ def LFLB_3(input_shape, nb_classes):
 
 def LFLB_4(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(units=256))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
     return model
 
 
 def LFLB_5(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(units=256))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
     return model
 
 
@@ -353,25 +413,70 @@ def LFLB_7(input_shape, nb_classes):
 
 def CNN_1(input_shape, nb_classes, nb_lstm_cells=128):
     model = Sequential(name=inspect.stack()[0][3])
-
-    model.add(Conv1D(128, 5, padding='valid',
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
                      input_shape=input_shape))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.1))
-    model.add(MaxPooling1D(pool_size=(8)))
-    model.add(Conv1D(128, 5, padding='valid', ))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.1))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
     model.add(Flatten())
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
-    opt = optimizers.rmsprop(lr=0.00005, rho=0.9, epsilon=None, decay=0.0)
-    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
     return model
 
 
+#CAMBIA EL OPTIMIZADOR
 def CNN_2(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    model.add(Flatten())
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.00001, decay=1e-6, momentum=0.9, nesterov=True)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
     return model
 
 

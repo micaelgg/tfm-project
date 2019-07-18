@@ -50,7 +50,8 @@ if __name__ == '__main__':
 
     # crear directorio del modelo
     start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    model_path = dataset_path + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
+    args_name = network_name + "-" + str(mini_batch) + "_"
+    model_path = dataset_path + args_name + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")

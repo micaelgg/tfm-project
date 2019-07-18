@@ -29,20 +29,12 @@ def extract_features(dataset):
         # ,hop_length=hop_length
 
         mfcc = librosa.feature.mfcc(x, n_mfcc=128)
-        mfcc_delta = librosa.feature.delta(mfcc)
-        mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
 
         mfcc = mfcc.transpose()
-        mfcc_delta = mfcc_delta.transpose()
-        mfcc_delta2 = mfcc_delta2.transpose()
 
         mfcc = preprocessing.MinMaxScaler().fit_transform(mfcc)
-        mfcc_delta = preprocessing.MinMaxScaler().fit_transform(mfcc_delta)
-        mfcc_delta2 = preprocessing.MinMaxScaler().fit_transform(mfcc_delta2)
 
         mfcc = mfcc.transpose()
-        mfcc_delta = mfcc_delta.transpose()
-        mfcc_delta2 = mfcc_delta2.transpose()
 
         mfcc = sequence.pad_sequences(mfcc,
                                       maxlen=globalvars.max_len,
@@ -50,23 +42,9 @@ def extract_features(dataset):
                                       padding='post',
                                       value=0.0)
 
-        mfcc_delta = sequence.pad_sequences(mfcc_delta,
-                                            maxlen=globalvars.max_len,
-                                            dtype='float32',
-                                            padding='post',
-                                            value=0.0)
-
-        mfcc_delta2 = sequence.pad_sequences(mfcc_delta2,
-                                             maxlen=globalvars.max_len,
-                                             dtype='float32',
-                                             padding='post',
-                                             value=0.0)
-
         mfcc = mfcc.transpose()
-        mfcc_delta = mfcc_delta.transpose()
-        mfcc_delta2 = mfcc_delta2.transpose()
 
-        f_global.append([mfcc, mfcc_delta, mfcc_delta2])
+        f_global.append([mfcc])
 
         # todo normalizar con todo el datset
 
@@ -103,7 +81,7 @@ if __name__ == '__main__':
 
     dataset = Dataset(path_dataset, name_dataset, gender, emotions, number_emo, frame_size, step)
     name_save_dataset = name_dataset + "-" + gender + '-' + str(frame_size) + '-' + ''.join(
-        str(e) for e in number_emo) + "_mfcc_deltas"
+        str(e) for e in number_emo) + "_mfcc"
     path_save_dataset = "data/" + name_save_dataset + "/" + name_save_dataset
 
     # source: https://thispointer.com/how-to-create-a-directory-in-python/

@@ -50,7 +50,8 @@ if __name__ == '__main__':
 
     # crear directorio del modelo
     start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    model_path = dataset_path + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
+    args_name = network_name + "-" + str(mini_batch) + "_"
+    model_path = dataset_path + args_name + datetime.now().strftime("%d-%m-%y_%H:%M") + "/"
     try:
         os.makedirs(model_path)
         print("Directory ", model_path, " Created ")
@@ -115,7 +116,7 @@ if __name__ == '__main__':
         globalvars.max_len = f_global.shape[1]
         globalvars.nb_features = f_global.shape[2]
 
-        # input_shape = (75, 75,3)
+        # input_shape = (3, 75, 75) channels_first
         input_shape = (f_global.shape[1], f_global.shape[2], f_global.shape[3])
 
         model = networks_mfcc_deltas.select_network(network_name, input_shape)
@@ -125,7 +126,7 @@ if __name__ == '__main__':
         callback_list = [
             EarlyStopping(
                 monitor='val_loss',
-                patience=50,
+                patience=30,
                 verbose=1,
                 mode='auto'
             ),
@@ -148,7 +149,7 @@ if __name__ == '__main__':
         ]
 
         batch_size = mini_batch
-        epochs = 300
+        epochs = 1000
 
         # fit the model
         hist = model.fit(x=f_global[train],
