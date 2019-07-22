@@ -69,14 +69,16 @@ if __name__ == '__main__':
     frame_size = float(args.frame_size) * 0.001
     step = float(frame_size) / 2
 
-    emotion_dic = {'anger': 0, 'disgust': 1, 'fear': 2, 'happiness': 3, 'sadness': 4, 'surprise': 5}
+    emotion_dic = {'anger': 0, 'disgust': 1, 'fear': 2, 'happiness': 3, 'sadness': 4, 'surprise': 5, 'neutral': 6,
+                   'calm': 7, 'boredom': 8}
     emotions.sort()
     number_emo = []
     for emo in emotions:
         number_emo.append(emotion_dic[emo])
 
     dataset = Dataset(path_dataset, name_dataset, gender, emotions, number_emo, frame_size, step)
-    name_save_dataset = name_dataset + "-" + gender + '-' + str(frame_size) + '-' + ''.join(str(e) for e in number_emo)
+    name_save_dataset = name_dataset + "-" + gender + '-' + str(frame_size) + '-' + ''.join(
+        str(e) for e in number_emo) + "-all-all"
     path_save_dataset = "data/" + name_save_dataset + "/" + name_save_dataset
 
     # source: https://thispointer.com/how-to-create-a-directory-in-python/
@@ -109,4 +111,4 @@ if __name__ == '__main__':
     print("Saving features to file... [sequence]")
     pickle.dump(features, open(path_save_dataset + '_features_sequence.p', 'wb'))
 
-    generate_csv.generate_csv(name_save_dataset)
+    # generate_csv.generate_csv(name_save_dataset)

@@ -407,6 +407,192 @@ def LFLB_7(input_shape, nb_classes):
     return model
 
 
+def LFLB_40(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(units=256))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.001, momentum=0.0, decay=0.0, nesterov=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+    return model
+
+
+def LFLB_41(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(units=256))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.005, momentum=0.0, decay=0.0, nesterov=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+    return model
+
+
+def LFLB_42(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(256, activation='softsign', return_sequences=True))
+    model.add(LSTM(256, activation='softsign', return_sequences=True))
+    model.add(LSTM(256, activation='softsign'))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+    return model
+
+
+def LFLB_43(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    input_shape = input_shape
+    # LFLB1
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same', data_format='channels_first',
+                     input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB2
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LFLB3
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1, 1), padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation('elu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # LSTM
+    model.add(TimeDistributed(Flatten()))
+    model.add(LSTM(256, activation='softsign', dropout=0.25, return_sequences=True))
+    model.add(LSTM(256, activation='softsign', dropout=0.25, return_sequences=True))
+    model.add(LSTM(256, activation='softsign', dropout=0.25))
+
+    # FC
+    model.add(Dense(units=nb_classes, activation='softmax'))
+
+    # Model compilation
+    opt = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+    return model
+
+
+def LFLB_44(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    return model
+
+
+def LFLB_45(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+
+    return model
+
+
+def LFLB_46(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+
+    return model
+
+
+def LFLB_47(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    return model
+
+
+def LFLB_48(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+    return model
+
+
+def LFLB_49(input_shape, nb_classes):
+    model = Sequential(name=inspect.stack()[0][3])
+
+    return model
+
+
+
 ######################################################################################
 ######################################   CNN   ######################################
 ######################################################################################
@@ -580,5 +766,35 @@ def select_network(network_name, input_shape):
         elif network_number == 7:
             model = LFLB_7(input_shape=input_shape,
                            nb_classes=globalvars.nb_classes)
+        elif network_number == 40:
+            model = LFLB_40(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 41:
+            model = LFLB_41(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 42:
+            model = LFLB_42(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 43:
+            model = LFLB_43(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 44:
+            model = LFLB_44(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 45:
+            model = LFLB_45(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 46:
+            model = LFLB_46(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 47:
+            model = LFLB_47(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 48:
+            model = LFLB_48(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 49:
+            model = LFLB_49(input_shape=input_shape,
+                            nb_classes=globalvars.nb_classes)
 
     return model

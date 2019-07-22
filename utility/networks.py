@@ -274,6 +274,259 @@ def LSTM_12(input_shape, nb_classes):
     return model
 
 
+def LSTM_13(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_14(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_130(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.00125, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_131(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.00075, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_132(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.40))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_133(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.Adagrad(lr=0.01, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_134(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(256))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_135(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(64))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_136(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign'))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_137(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_138(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
+def LSTM_139(input_shape, nb_classes):
+    tf.logging.set_verbosity(tf.logging.ERROR)  # evitar warnings por cambio de versión
+    model = Sequential(name=inspect.stack()[0][3])
+
+    nb_lstm_cells = 128
+
+    with K.name_scope('BLSTMLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(LSTM(nb_lstm_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
+    return model
+
+
 ######################################################################################
 ######################################   RNN   ######################################
 ######################################################################################
@@ -348,11 +601,42 @@ def RNN_3(input_shape, nb_classes):
 
 def RNN_4(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
+
+    nb_rnn_cells = 128
+
+    with K.name_scope('RNNLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(SimpleRNN(nb_rnn_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
     return model
 
 
 def RNN_5(input_shape, nb_classes):
     model = Sequential(name=inspect.stack()[0][3])
+
+    nb_rnn_cells = 128
+
+    with K.name_scope('RNNLayer'):
+        model.add(Masking(mask_value=globalvars.masking_value, input_shape=input_shape))
+        model.add(Dense(128))
+        model.add(SimpleRNN(nb_rnn_cells, activation='softsign', dropout=0.25, return_sequences=True))
+        model.add(SimpleRNN(nb_rnn_cells, activation='softsign', dropout=0.25))
+
+    with K.name_scope('OUTPUT'):
+        # Get posterior probability for each emotional class
+        model.add(Dense(nb_classes, activation='softmax'))
+
+    # compile the model
+    opt = optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['categorical_accuracy'])
     return model
 
 
@@ -565,6 +849,46 @@ def select_network(network_name):
         elif network_number == 12:
             model = LSTM_12(input_shape=(globalvars.max_len, globalvars.nb_features),
                             nb_classes=globalvars.nb_classes)
+        elif network_number == 13:
+            model = LSTM_13(input_shape=(globalvars.max_len, globalvars.nb_features),
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 14:
+            model = LSTM_14(input_shape=(globalvars.max_len, globalvars.nb_features),
+                            nb_classes=globalvars.nb_classes)
+        elif network_number == 130:
+            model = LSTM_130(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 131:
+            model = LSTM_131(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 132:
+            model = LSTM_132(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 133:
+            model = LSTM_133(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 134:
+            model = LSTM_134(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 135:
+            model = LSTM_135(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 136:
+            model = LSTM_136(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 137:
+            model = LSTM_137(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 138:
+            model = LSTM_138(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+        elif network_number == 139:
+            model = LSTM_139(input_shape=(globalvars.max_len, globalvars.nb_features),
+                             nb_classes=globalvars.nb_classes)
+
+
+
+
 
     if network_type == "CNN":
         if network_number == 1:
